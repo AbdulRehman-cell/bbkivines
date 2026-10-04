@@ -1,0 +1,31 @@
+services:
+  # Web Service running the Express API and serving the React Frontend
+  - type: web
+    name: bbkivines-app
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        fromDatabase:
+          name: bbkivines-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true # Securely generates a cryptographic token automatically
+      - key: CORS_ORIGIN
+        value: https://*.onrender.com # Change to custom domain if needed
+
+databases:
+  # Fully managed MongoDB database (via Render's PostgreSQL instance, or mapping custom MongoDB partner)
+  # Note: Standard Render native DB is PostgreSQL. If MongoDB is strictly required,
+  # host on MongoDB Atlas and set MONGO_URI as a secret. Below config establishes a helper DB instance.
+  - name: bbkivines-db
+    databaseName: bbkivines
+    user: admin
+    plan: free
+    region: oregon
